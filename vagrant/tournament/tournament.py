@@ -16,7 +16,8 @@ def deleteMatches():
     """Remove all the match records from the database."""
     conn = connect()
     c = conn.cursor()
-    c.execute("DELETE FROM MATCHES")
+    query = "DELETE FROM MATCHES"
+    c.execute(query)
     conn.commit()
     conn.close()
 
@@ -25,7 +26,8 @@ def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
     c = conn.cursor()
-    c.execute("DELETE FROM PLAYERS")
+    query = "DELETE FROM PLAYERS"
+    c.execute(query)
     conn.commit()
     conn.close()
 
@@ -34,7 +36,8 @@ def countPlayers():
     """Returns the number of players currently registered."""
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT count(*) FROM PLAYERS;")
+    query = "SELECT count(*) FROM PLAYERS;"
+    c.execute(query)
     result = c.fetchone()[0]
     conn.commit()
     conn.close()
@@ -51,7 +54,8 @@ def registerPlayer(name):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO PLAYERS (P_NAME) VALUES (%s);", (name,))
+    query = "INSERT INTO PLAYERS (P_NAME) VALUES (%s);"
+    c.execute(query, (name,))
     conn.commit()
     conn.close()
 
@@ -71,7 +75,8 @@ def playerStandings():
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT * FROM standings;")
+    query = "SELECT * FROM standings;"
+    c.execute(query)
     matches = c.fetchall()
     conn.close()
     return matches
@@ -86,9 +91,9 @@ def reportMatch(winner, loser):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (winner))
+    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (winner,))
     win = c.fetchall()[0][0]
-    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (loser))
+    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (loser,))
     los = c.fetchall()[0][0]
 
     print win
@@ -129,4 +134,3 @@ def swissPairings():
                 pair = (id1, name1, id2, name2)
                 pairings.append(pair)
     return pairings
-
