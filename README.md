@@ -14,10 +14,15 @@ after vagrant up in gitbash type those commands
 
 
 cd /vagrant
+
 cd /tournament
+
 psql
+
 \i tournament.sql
+
 \q
+
 python tournament_test.py
 
 you should see all test pass
