@@ -9,13 +9,18 @@ conn = []
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    try:
+        conn = psycopg2.connect("dbname=tournament")
+        c = conn.cursor()
+        return conn, c
+    except:
+        print("<error message>")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    conn = connect()
-    c = conn.cursor()
+    conn, c = connect()
+
     query = "DELETE FROM MATCHES"
     c.execute(query)
     conn.commit()
@@ -24,8 +29,7 @@ def deleteMatches():
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    conn = connect()
-    c = conn.cursor()
+    conn, c = connect()
     query = "DELETE FROM PLAYERS"
     c.execute(query)
     conn.commit()
@@ -34,8 +38,7 @@ def deletePlayers():
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    conn = connect()
-    c = conn.cursor()
+    conn, c = connect()
     query = "SELECT count(*) FROM PLAYERS;"
     c.execute(query)
     result = c.fetchone()[0]
@@ -52,8 +55,7 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    conn = connect()
-    c = conn.cursor()
+    conn, c = connect()
     query = "INSERT INTO PLAYERS (P_NAME) VALUES (%s);"
     c.execute(query, (name,))
     conn.commit()
@@ -73,8 +75,7 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    conn = connect()
-    c = conn.cursor()
+    conn, c = connect()
     query = "SELECT * FROM standings;"
     c.execute(query)
     matches = c.fetchall()
@@ -89,17 +90,8 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    conn = connect()
-    c = conn.cursor()
-    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (winner,))
-    win = c.fetchall()[0][0]
-    c.execute("SELECT P_NAME FROM PLAYERS WHERE (%d) = PLAYERS.P_ID; " % (loser,))
-    los = c.fetchall()[0][0]
-
-    print win
-
-    c.execute("INSERT INTO MATCHES (WINNER, LOOSER) VALUES (%s, %s);", (win, los,))
-
+    conn, c = connect()
+    c.execute("INSERT INTO MATCHES (WINNER_ID,LOSSER_ID) VALUES (%s, %s);", (winner, loser,))
     conn.commit()
     conn.close()
 
